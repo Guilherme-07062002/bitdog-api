@@ -7,8 +7,6 @@ compatibility_flags = [ "nodejs_compat" ]
 enabled = true
 
 [vars]
-CLOUDFLARE_ACCOUNT_ID = "e53fe9b1179261d74619b7241c0bdb8c"
-API_TOKEN = "O-gEVZgCAtmon9TWakR0uVAjwO-hXxKC4DvtfbmB"
 API_URL = "https://api.cloudflare.com/client/v4/accounts/e53fe9b1179261d74619b7241c0bdb8c/ai/run/@cf/meta/llama-3-8b-instruct"
 WHISPER_API_URL=" https://api.cloudflare.com/client/v4/accounts/e53fe9b1179261d74619b7241c0bdb8c/ai/run/@cf/openai/whisper"
-PASSWORD = "secret-bitdog"
+

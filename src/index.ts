@@ -1,6 +1,7 @@
 export interface Env {
 	API_TOKEN: string;
 	API_URL: string;
+	PASSWORD: string;
 }
 
 const systemInstructions = {
@@ -31,6 +32,17 @@ export default {
 		// Mandar para IA
 		if (request.method === 'POST' && pathname === '/ai') {
 			try {
+				// Verifica se foi passado o query params 'senha' contendo a senha de acesso
+				const senha = url.searchParams.get('senha');
+				if (!senha) {
+					return new Response('Senha de acesso não informada', { status: 401 });
+				}
+
+				// Verifica se a senha de acesso está correta
+				if (senha !== env.PASSWORD) {
+					return new Response('Senha de acesso inválida', { status: 401 });
+				}
+
 				const requestBody = await request.json() as any;
 				if (!requestBody.message) {
 					return new Response('Não foi possível determinar a mensagem a ser enviada', { status: 400 });

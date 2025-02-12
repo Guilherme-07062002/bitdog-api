@@ -8,7 +8,9 @@ const systemInstructions = {
     role: "system",
     content: "Você é um assistente amigável que responderá às mensagens de forma concisa, " +
              "considerando que as respostas serão exibidas em um display OLED com espaço limitado. " +
-             "Evite respostas longas e forneça informações claras e diretas"
+             "Evite respostas longas e forneça informações claras e diretas" +
+			 "Além disso, não retorne caracteres especiais, acentos ou emojis, pois o display não suporta" +
+			 "As respostas deverão ser retornadas em português brasileiro"
 }
 
 const prompt = {
@@ -49,6 +51,7 @@ export default {
 				}
 
 				const message = requestBody.message;
+				console.log("🚀 ~ fetch ~ message:", message)
 
 				// Adicionar mensagem do usuário
 				adjustMessage(message);

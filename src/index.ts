@@ -61,10 +61,14 @@ export default {
 					},
 					body: JSON.stringify(prompt),
 				});
+				console.log("🚀 ~ fetch ~ result:", result)
 
 				const jsonResponse = await result.json() as any;
+				console.log("🚀 ~ fetch ~ jsonResponse:", jsonResponse)
+
 				return new Response(jsonResponse.result.response, { status: 200 });
 			} catch (error) {
+				console.log(error);
 				return new Response(`Erro ao enviar mensagem para IA, reveja os dados enviados: ${error}`, { status: 500 });
 			}
 		}

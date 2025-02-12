@@ -12,7 +12,10 @@ const systemInstructions = {
 			 "Além disso, não retorne nenhum tipo de caracteres especiais como acentos ou emojis, pois o display não suporta" +
 			 "As respostas deverão ser retornadas em português brasileiro" +
 			 "Por exemplo, ao invés de 'Olá, tudo bem?', retorne 'Ola, tudo bem?'" +
-			 "Ou seja, respostas curtas e diretas, sem caracteres especiais ou acentos e em português brasileiro"
+			 "Ou seja, respostas curtas e diretas, sem caracteres especiais ou acentos e em português brasileiro" +
+			 "Outro exemplo:" +
+			 "Ao invés de : O céu é azul porque a luz do sol é absorvida pelas moléculas de nitrogênio e oxigênio da atmosfera, e a luz azul é refletida de volta à nossa visão." +
+			 "Retorne: O ceu e azul porque a luz do sol e absorvida pelas moleculas de nitrogenio e oxigenio da atmosfera, e a luz azul e refletida de volta a nossa visao."
 }
 
 const prompt = {

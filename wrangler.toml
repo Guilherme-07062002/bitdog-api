@@ -1,6 +1,7 @@
 name = "bitdog-api"
 main = "src/index.ts"
 compatibility_date = "2025-02-04"
+compatibility_flags = [ "nodejs_compat" ]
 
 [observability]
 enabled = true
@@ -9,3 +10,6 @@ enabled = true
 API_TOKEN = "O-gEVZgCAtmon9TWakR0uVAjwO-hXxKC4DvtfbmB"
 API_URL = "https://api.cloudflare.com/client/v4/accounts/e53fe9b1179261d74619b7241c0bdb8c/ai/run/@cf/meta/llama-3-8b-instruct"
 PASSWORD = "secret-bitdog"
+
+[ai]
+binding = "AI"

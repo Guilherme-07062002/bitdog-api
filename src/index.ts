@@ -1,7 +1,10 @@
+import { Buffer } from 'node:buffer';
+
 export interface Env {
 	API_TOKEN: string;
 	API_URL: string;
 	PASSWORD: string;
+	AI: Ai;
 }
 
 const systemInstructions = {
@@ -82,6 +85,49 @@ export default {
 				return new Response(`Erro ao enviar mensagem para IA, reveja os dados enviados: ${error}`, { status: 500 });
 			}
 		}
+
+		// Endpoint para conversão de voz para texto
+        if (request.method === 'POST' && pathname === '/voice-to-text') {
+            try {
+				// Verifica se foi passado o query params 'senha' contendo a senha de acesso
+				const senha = url.searchParams.get('senha');
+				if (!senha) {
+					return new Response('Senha de acesso não informada', { status: 401 });
+				}
+
+				// Verifica se a senha de acesso está correta
+				if (senha !== env.PASSWORD) {
+					return new Response('Senha de acesso inválida', { status: 401 });
+				}
+
+                const requestBody = await request.json() as any;
+                if (!requestBody.audioBase64) {
+                    return new Response('Não foi possível determinar o áudio', { status: 400 });
+                }
+
+                const audioBase64 = requestBody.audioBase64;
+                const audioBuffer = Buffer.from(audioBase64, 'base64');
+
+				const res = await fetch(
+					"https://github.com/Azure-Samples/cognitive-services-speech-sdk/raw/master/samples/cpp/windows/console/samples/enrollment_audio_katie.wav"
+				  );
+				  const blob = await res.arrayBuffer();
+
+				  const input = {
+					audio: [...new Uint8Array(blob)],
+				  };
+
+				  const response = await env.AI.run(
+					"@cf/openai/whisper",
+					input
+				  );
+
+				  return Response.json({ input: { audio: [] }, response });
+            } catch (error) {
+                console.log(error);
+                return new Response(`Erro ao converter áudio para texto, reveja os dados enviados: ${error}`, { status: 500 });
+            }
+        }
 
         if (request.method === 'POST') {
 			try {

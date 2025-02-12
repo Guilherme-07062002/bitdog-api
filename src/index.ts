@@ -50,31 +50,33 @@ export default {
 					return new Response('Senha de acesso inválida', { status: 401 });
 				}
 
-				const requestBody = await request.json() as any;
-				if (!requestBody.message) {
-					return new Response('Não foi possível determinar a mensagem a ser enviada', { status: 400 });
-				}
+				// const requestBody = await request.json() as any;
+				// if (!requestBody.message) {
+				// 	return new Response('Não foi possível determinar a mensagem a ser enviada', { status: 400 });
+				// }
 
-				const message = requestBody.message;
-				console.log("🚀 ~ fetch ~ message:", message)
+				// const message = requestBody.message;
+				// console.log("🚀 ~ fetch ~ message:", message)
 
-				// Adicionar mensagem do usuário
-				adjustMessage(message);
+				// // Adicionar mensagem do usuário
+				// adjustMessage(message);
 
-				const result = await fetch(env.API_URL, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Bearer ${env.API_TOKEN}`,
-					},
-					body: JSON.stringify(prompt),
-				});
-				console.log("🚀 ~ fetch ~ result:", result)
+				// const result = await fetch(env.API_URL, {
+				// 	method: 'POST',
+				// 	headers: {
+				// 		'Content-Type': 'application/json',
+				// 		'Authorization': `Bearer ${env.API_TOKEN}`,
+				// 	},
+				// 	body: JSON.stringify(prompt),
+				// });
+				// console.log("🚀 ~ fetch ~ result:", result)
 
-				const jsonResponse = await result.json() as any;
-				console.log("🚀 ~ fetch ~ jsonResponse:", jsonResponse)
+				// const jsonResponse = await result.json() as any;
+				// console.log("🚀 ~ fetch ~ jsonResponse:", jsonResponse)
 
-				return new Response(jsonResponse.result.response, { status: 200 });
+				// return new Response(jsonResponse.result.response, { status: 200 });
+
+				return new Response("(mock) O ceu e azul porque a luz do sol e absorvida pelas moleculas de nitrogenio e oxigenio da atmosfera, e a luz azul e refletida de volta a nossa visao.", { status: 200 });
 			} catch (error) {
 				console.log(error);
 				return new Response(`Erro ao enviar mensagem para IA, reveja os dados enviados: ${error}`, { status: 500 });

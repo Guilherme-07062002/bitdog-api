@@ -10,7 +10,9 @@ const systemInstructions = {
              "considerando que as respostas serão exibidas em um display OLED com espaço limitado. " +
              "Evite respostas longas e forneça informações claras e diretas" +
 			 "Além disso, não retorne nenhum tipo de caracteres especiais como acentos ou emojis, pois o display não suporta" +
-			 "As respostas deverão ser retornadas em português brasileiro"
+			 "As respostas deverão ser retornadas em português brasileiro" +
+			 "Por exemplo, ao invés de 'Olá, tudo bem?', retorne 'Ola, tudo bem?'" +
+			 "Ou seja, respostas curtas e diretas, sem caracteres especiais ou acentos e em português brasileiro"
 }
 
 const prompt = {

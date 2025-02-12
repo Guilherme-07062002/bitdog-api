@@ -3,8 +3,8 @@ import { Buffer } from 'node:buffer';
 export interface Env {
 	API_TOKEN: string;
 	API_URL: string;
+	WHISPER_API_URL: string;
 	PASSWORD: string;
-	AI: Ai;
 }
 
 const systemInstructions = {
@@ -87,47 +87,67 @@ export default {
 		}
 
 		// Endpoint para conversão de voz para texto
-        if (request.method === 'POST' && pathname === '/voice-to-text') {
-            try {
-				// Verifica se foi passado o query params 'senha' contendo a senha de acesso
-				const senha = url.searchParams.get('senha');
-				if (!senha) {
-					return new Response('Senha de acesso não informada', { status: 401 });
-				}
+		if (request.method === 'POST' && pathname === '/voice-to-text') {
+			try {
+			const url = new URL(request.url);
 
-				// Verifica se a senha de acesso está correta
-				if (senha !== env.PASSWORD) {
-					return new Response('Senha de acesso inválida', { status: 401 });
-				}
+			// Verifica se foi passado o query params 'senha' contendo a senha de acesso
+			const senha = url.searchParams.get('senha');
+			if (!senha) {
+				return new Response('Senha de acesso não informada', { status: 401 });
+			}
 
-                const requestBody = await request.json() as any;
-                if (!requestBody.audioBase64) {
-                    return new Response('Não foi possível determinar o áudio', { status: 400 });
-                }
+			// Verifica se a senha de acesso está correta
+			if (senha !== env.PASSWORD) {
+				return new Response('Senha de acesso inválida', { status: 401 });
+			}
 
-                const audioBase64 = requestBody.audioBase64;
-                const audioBuffer = Buffer.from(audioBase64, 'base64');
+			const requestBody = await request.json() as any;
+			console.log("🚀 ~ fetch ~ requestBody:", requestBody)
 
-				const res = await fetch(
-					"https://github.com/Azure-Samples/cognitive-services-speech-sdk/raw/master/samples/cpp/windows/console/samples/enrollment_audio_katie.wav"
-				  );
-				  const blob = await res.arrayBuffer();
+			if (!requestBody.audioBase64) {
+				return new Response('Não foi possível determinar o áudio', { status: 400 });
+			}
 
-				  const input = {
-					audio: [...new Uint8Array(blob)],
-				  };
+			const audioBase64 = requestBody.audioBase64;
+			console.log("🚀 ~ fetch ~ audioBase64:", audioBase64)
 
-				  const response = await env.AI.run(
-					"@cf/openai/whisper",
-					input
-				  );
+			// Converte a string Base64 para Uint8Array usando atob
+			const binaryString = atob(audioBase64);
+			const len = binaryString.length;
+			const audioArray = new Uint8Array(len);
+			for (let i = 0; i < len; i++) {
+				audioArray[i] = binaryString.charCodeAt(i);
+			}
 
-				  return Response.json({ input: { audio: [] }, response });
-            } catch (error) {
-                console.log(error);
-                return new Response(`Erro ao converter áudio para texto, reveja os dados enviados: ${error}`, { status: 500 });
-            }
-        }
+			const input = {
+				audio: Array.from(audioArray),
+			};
+			console.log("🚀 ~ fetch ~ input.audioArray:", audioArray)
+
+			console.log("🚀 ~ fetch ~ input:", JSON.stringify(input));
+
+			const result = await fetch(env.WHISPER_API_URL, {
+				method: 'POST',
+				headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${env.API_TOKEN}`,
+				},
+				body: JSON.stringify(input),
+			});
+
+			console.log("🚀 ~ fetch ~ result:", result);
+			const data = await result.json();
+
+			return new Response(JSON.stringify({ input: { audio: [] }, response: data }), {
+				headers: { 'Content-Type': 'application/json' },
+			});
+
+			} catch (error) {
+			console.log(error);
+			return new Response(`Erro ao converter áudio para texto, reveja os dados enviados: ${error}`, { status: 500 });
+			}
+		}
 
         if (request.method === 'POST') {
 			try {

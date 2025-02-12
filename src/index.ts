@@ -1,18 +1,80 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+export interface Env {
+	API_TOKEN: string;
+	API_URL: string;
+}
+
+const systemInstructions = {
+    role: "system",
+    content: "Você é um assistente amigável que responderá às mensagens de forma concisa, " +
+             "considerando que as respostas serão exibidas em um display OLED com espaço limitado. " +
+             "Evite respostas longas e forneça informações claras e diretas"
+}
+
+const prompt = {
+	messages: [ systemInstructions ]
+}
+
+const adjustMessage = (message: string) => {
+	prompt.messages.push({
+		role: 'user',
+		content: message
+	});
+
+	return prompt;
+}
 
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response('Hello World!');
-	},
+    async fetch(request, env, ctx): Promise<Response> {
+        const url = new URL(request.url);
+        const pathname = url.pathname;
+
+		// Mandar para IA
+		if (request.method === 'POST' && pathname === '/ai') {
+			try {
+				const requestBody = await request.json() as any;
+				if (!requestBody.message) {
+					return new Response('Não foi possível determinar a mensagem a ser enviada', { status: 400 });
+				}
+
+				const message = requestBody.message;
+
+				// Adicionar mensagem do usuário
+				adjustMessage(message);
+
+				const result = await fetch(env.API_URL, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${env.API_TOKEN}`,
+					},
+					body: JSON.stringify(prompt),
+				});
+
+				const jsonResponse = await result.json() as any;
+				return new Response(jsonResponse.result.response, { status: 200 });
+			} catch (error) {
+				return new Response(`Erro ao enviar mensagem para IA, reveja os dados enviados: ${error}`, { status: 500 });
+			}
+		}
+
+        if (request.method === 'POST') {
+			try {
+				const requestBody = await request.json() as any;
+				if (!requestBody.message) {
+					return new Response('Não foi possível determinar a mensagem', { status: 400 });
+				}
+
+				const message = requestBody.message;
+				return new Response(`Mensagem recebida: ${message}`, { status: 200 });
+			} catch (error) {
+				return new Response('Erro ao receber mensagem, reveja os dados enviados', { status: 500 });
+			}
+        }
+
+        if (request.method === 'GET') {
+            return new Response('Hello World!', { status: 200 });
+        }
+
+		return new Response('Not found', { status: 404 });
+    },
 } satisfies ExportedHandler<Env>;

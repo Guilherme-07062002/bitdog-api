@@ -7,16 +7,7 @@ export interface Env {
 
 const systemInstructions = {
     role: "system",
-    content: "Você é um assistente amigável que responderá às mensagens de forma concisa, " +
-             "considerando que as respostas serão exibidas em um display OLED com espaço limitado. " +
-             "Evite respostas longas e forneça informações claras e diretas" +
-			 "Além disso, não retorne nenhum tipo de caracteres especiais como acentos ou emojis, pois o display não suporta" +
-			 "As respostas deverão ser retornadas em português brasileiro" +
-			 "Por exemplo, ao invés de 'Olá, tudo bem?', retorne 'Ola, tudo bem?'" +
-			 "Ou seja, respostas curtas e diretas, sem caracteres especiais ou acentos e em português brasileiro" +
-			 "Outro exemplo:" +
-			 "Ao invés de : O céu é azul porque a luz do sol é absorvida pelas moléculas de nitrogênio e oxigênio da atmosfera, e a luz azul é refletida de volta à nossa visão." +
-			 "Retorne: O ceu e azul porque a luz do sol e absorvida pelas moleculas de nitrogenio e oxigenio da atmosfera, e a luz azul e refletida de volta a nossa visao."
+    content: "Você é um assistente amigável que responde a perguntas em português brasileiro. As respostas devem ser adequadas para exibição em um display OLED com espaço limitado."
 }
 
 const prompt = {
@@ -77,8 +68,10 @@ export default {
 
 				const responseMessage = jsonResponse.result.response;
 
-				// Remover acentos, emojis e caracteres especiais
-				const responseMessageClean = responseMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '');
+				const responseMessageClean = responseMessage
+					.normalize('NFD')
+					.replace(/[\u0300-\u036f]/g, "") // Remove acentos
+					.replace(/[^\w\s,/]/gi, ""); // Remove caracteres especiais, exceto a vírgula e a barra
 
 				return new Response(responseMessageClean, { status: 200 });
 			} catch (error) {

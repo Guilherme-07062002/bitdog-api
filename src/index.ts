@@ -75,7 +75,12 @@ export default {
 				const jsonResponse = await result.json() as any;
 				console.log("🚀 ~ fetch ~ jsonResponse:", jsonResponse)
 
-				return new Response(jsonResponse.result.response, { status: 200 });
+				const responseMessage = jsonResponse.result.response;
+
+				// Remover acentos, emojis e caracteres especiais
+				const responseMessageClean = responseMessage.normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^\w\s]/gi, '');
+
+				return new Response(responseMessageClean, { status: 200 });
 			} catch (error) {
 				console.log(error);
 				return new Response(`Erro ao enviar mensagem para IA, reveja os dados enviados: ${error}`, { status: 500 });

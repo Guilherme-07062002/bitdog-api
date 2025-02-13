@@ -15,12 +15,11 @@ const prompt = {
 }
 
 const adjustMessage = (message: string) => {
-	prompt.messages.push({
-		role: 'user',
-		content: message
-	});
-
-	return prompt;
+    prompt.messages = [systemInstructions, {
+        role: 'user',
+        content: message
+    }];
+    return prompt;
 }
 
 export default {

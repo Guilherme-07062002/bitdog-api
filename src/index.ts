@@ -7,7 +7,7 @@ export interface Env {
 
 const systemInstructions = {
     role: "system",
-    content: "Você é um assistente amigável que responde a perguntas em português brasileiro. As respostas devem ser adequadas para exibição em um display OLED com espaço limitado."
+    content: "Você é um assistente amigável que recebe tópicos de perguntas em português brasileiro e os transforma em perguntas detalhadas. As respostas devem ser adequadas para exibição em um display OLED com espaço limitado. Seja conciso e direto na formulação das perguntas."
 }
 
 const prompt = {

@@ -7,7 +7,7 @@ export interface Env {
 
 const systemInstructions = {
     role: "system",
-    content: "Você é um assistente amigável que recebe tópicos de perguntas em português brasileiro e os transforma em perguntas detalhadas. As respostas devem ser adequadas para exibição em um display OLED com espaço limitado. Seja conciso e direto na formulação das perguntas."
+    content: "Você é um assistente amigável que recebe tópicos de perguntas em português brasileiro e os transforma em respostas detalhadas. Exemplo: Ao receber 'Capital da França' você deve retornar uma resposta indicando qual é a capital da frança incluindo outros detalhes. Além disso, pode ser solicitado a você que retorne 3 tópicos a serem abordados de exemplo. Responda de forma objetiva sem muitos detalhes em um único parágrafo."
 }
 
 const prompt = {

@@ -3,6 +3,7 @@ export interface Env {
 	API_URL: string;
 	WHISPER_API_URL: string;
 	PASSWORD: string;
+	DB: D1Database;
 }
 
 const systemInstructions = {
@@ -52,6 +53,8 @@ export default {
 				// Adicionar mensagem do usuário
 				adjustMessage(message);
 
+				const startTime = new Date().getTime();
+
 				const result = await fetch(env.API_URL, {
 					method: 'POST',
 					headers: {
@@ -62,6 +65,11 @@ export default {
 				});
 				console.log("🚀 ~ fetch ~ result:", result)
 
+				const endTime = new Date().getTime();
+				const durationMs = endTime - startTime;
+				const durationSeconds = Math.round(durationMs / 1000); // Arredonda para o segundo mais próximo
+				console.log("🚀 ~ fetch ~ duration:", durationSeconds)
+
 				const jsonResponse = await result.json() as any;
 				console.log("🚀 ~ fetch ~ jsonResponse:", jsonResponse)
 
@@ -71,6 +79,23 @@ export default {
 					.normalize('NFD')
 					.replace(/[\u0300-\u036f]/g, "") // Remove acentos
 					.replace(/[^\w\s,/]/gi, ""); // Remove caracteres especiais, exceto a vírgula e a barra
+
+				// Salvar a mensagem no banco de dados
+                try {
+                    const stmt = env.DB.prepare(`
+                        INSERT INTO registros (question, answer, duration, timestamp)
+                        VALUES (?, ?, ?, ?)
+                    `);
+
+					// Timestamp como inteiro
+					const timestamp = Math.floor(Date.now() / 1000);
+                    const info = await stmt.bind(message, responseMessageClean, durationSeconds, timestamp).run();
+                    console.log(" ~ fetch ~ info:", info)
+
+                } catch (error) {
+                    console.error(" ~ fetch ~ error:", error)
+                    return new Response(`Erro ao salvar no banco de dados: ${error}`, { status: 500 });
+                }
 
 				return new Response(responseMessageClean, { status: 200 });
 			} catch (error) {

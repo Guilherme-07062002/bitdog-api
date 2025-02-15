@@ -10,3 +10,7 @@ enabled = true
 API_URL = "https://api.cloudflare.com/client/v4/accounts/e53fe9b1179261d74619b7241c0bdb8c/ai/run/@cf/meta/llama-3-8b-instruct"
 WHISPER_API_URL="https://api.cloudflare.com/client/v4/accounts/e53fe9b1179261d74619b7241c0bdb8c/ai/run/@cf/openai/whisper"
 
+[[d1_databases]]
+binding = "DB"
+database_name = "bitdog"
+database_id = "8a621fae-31ab-4b80-b79d-9c394ca22614"

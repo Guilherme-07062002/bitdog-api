@@ -55,7 +55,7 @@ A API utiliza as seguintes variáveis de ambiente:
 
 ```json
 {
-    "message": "Sua pergunta ou prompt de texto"
+ "message": "Sua pergunta ou prompt de texto"
 }
 ```
 
@@ -71,7 +71,7 @@ A API utiliza as seguintes variáveis de ambiente:
 
 ```json
 {
-	"audioBase64": "Base64 do áudio"
+ "audioBase64": "Base64 do áudio"
 }
 ```
 

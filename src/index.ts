@@ -28,6 +28,81 @@ export default {
         const url = new URL(request.url);
         const pathname = url.pathname;
 
+		// Realizar análise dos dados com IA
+		if (request.method === 'POST' && pathname === '/analyze') {
+			try {
+				// Verifica se foi passado o query params 'senha' contendo a senha de acesso
+				const senha = url.searchParams.get('senha');
+				if (!senha) {
+					return new Response('Senha de acesso não informada', { status: 401 });
+				}
+
+				// Verifica se a senha de acesso está correta
+				if (senha !== env.PASSWORD) {
+					return new Response('Senha de acesso inválida', { status: 401 });
+				}
+
+				const registers = await env.DB.prepare(`
+					SELECT question, answer, duration, timestamp
+					FROM registros
+				`).all();
+
+				const result = await fetch(env.API_URL, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Bearer ${env.API_TOKEN}`,
+					},
+					body: JSON.stringify({
+						messages: [
+							{
+								role: "system",
+								content: `Você terá acesso a um conjunto de dados contendo as seguintes informações sobre cada interação:
+									* **id**: Um identificador único para cada interação.
+									* **question**: A pergunta feita pelo usuário.
+									* **answer**: A resposta fornecida pela IA.
+									* **duration**: A duração da interação (em segundos).
+									* **timestamp**: O momento em que a interação ocorreu (formato Unix timestamp).
+
+									## Tarefas
+
+									Com base nesses dados, realize as seguintes análises:
+
+									1. **Perguntas mais frequentes:** Identifique as perguntas que foram feitas com mais frequência pelos usuários.
+									2. **Tópicos e duração:** Analise a relação entre os tópicos das perguntas e a duração das interações. Quais tópicos tendem a gerar respostas mais longas ou mais curtas?
+									3. **Qualidade da resposta e duração:** Verifique se a duração da interação está relacionada à qualidade da resposta. Perguntas que geram respostas mais longas são mais bem respondidas?
+									4. **Distribuição ao longo do tempo:** Analise como a distribuição de perguntas e respostas varia ao longo do tempo. Existem padrões de uso em determinados horários ou dias da semana?
+									Sua resposta deve conter até 256 tokens.
+									`
+							},
+							{
+                                role: "user",
+								content: `## Dados Disponíveis para Análise (${registers.results.length} registros) \n\n` +
+									registers.results.map((register, index) => {
+                                        return `**ID**: ${index + 1}\n` +
+                                            `**Pergunta**: ${register.question}\n` +
+                                            `**Resposta**: ${register.answer}\n` +
+                                            `**Duração**: ${register.duration} segundos\n` +
+											`**Timestamp**: ${new Date((register.timestamp as number) * 1000).toLocaleString()}\n\n`;
+                                    }).join('\n')
+                            }
+						]
+					}),
+				});
+				console.log("🚀 ~ fetch ~ result:", result)
+
+				const jsonResponse = await result.json() as any;
+				console.log("🚀 ~ fetch ~ jsonResponse:", jsonResponse)
+
+				const responseMessage = jsonResponse.result.response;
+
+				return new Response(responseMessage, { status: 200 });
+			} catch (error) {
+				console.log(error);
+				return new Response(`Erro ao enviar mensagem para IA, reveja os dados enviados: ${error}`, { status: 500 });
+			}
+		}
+
 		// Mandar para IA
 		if (request.method === 'POST' && pathname === '/ai') {
 			try {

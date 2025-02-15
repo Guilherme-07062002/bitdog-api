@@ -216,6 +216,14 @@ export default {
 					FROM registros
 				`).all();
 
+				// Devido a limitação da IA, é necessário limitar a quantidade de registros analisados
+				const registersToAnalyze = await env.DB.prepare(`
+					SELECT question, answer, duration, timestamp
+					FROM registros
+					ORDER BY RANDOM()
+					LIMIT 10
+				`).all();
+
 				const aiAnalysis = await fetch(env.API_URL, {
 					method: 'POST',
 					headers: {
@@ -249,7 +257,7 @@ export default {
 							{
                                 role: "user",
 								content: `## Dados Disponíveis para Análise (${registers.results.length} registros) \n\n` +
-									registers.results.map((register, index) => {
+									registersToAnalyze.results.map((register, index) => {
                                         return `**ID**: ${index + 1}\n` +
                                             `**Pergunta**: ${register.question}\n` +
                                             `**Resposta**: ${register.answer}\n` +

@@ -80,22 +80,25 @@ export default {
 					.replace(/[\u0300-\u036f]/g, "") // Remove acentos
 					.replace(/[^\w\s,/]/gi, ""); // Remove caracteres especiais, exceto a vírgula e a barra
 
-				// Salvar a mensagem no banco de dados
-                try {
-                    const stmt = env.DB.prepare(`
-                        INSERT INTO registros (question, answer, duration, timestamp)
-                        VALUES (?, ?, ?, ?)
-                    `);
+				// Se o body da requisição não conter [PROMPT INICIAL], salvar no banco de dados
+				if (!message.includes('[PROMPT INICIAL]')) {
+					// Salvar a mensagem no banco de dados
+					try {
+						const stmt = env.DB.prepare(`
+							INSERT INTO registros (question, answer, duration, timestamp)
+							VALUES (?, ?, ?, ?)
+						`);
 
-					// Timestamp como inteiro
-					const timestamp = Math.floor(Date.now() / 1000);
-                    const info = await stmt.bind(message, responseMessageClean, durationSeconds, timestamp).run();
-                    console.log(" ~ fetch ~ info:", info)
+						// Timestamp como inteiro
+						const timestamp = Math.floor(Date.now() / 1000);
+						const info = await stmt.bind(message, responseMessageClean, durationSeconds, timestamp).run();
+						console.log(" ~ fetch ~ info:", info)
 
-                } catch (error) {
-                    console.error(" ~ fetch ~ error:", error)
-                    return new Response(`Erro ao salvar no banco de dados: ${error}`, { status: 500 });
-                }
+					} catch (error) {
+						console.error(" ~ fetch ~ error:", error)
+						return new Response(`Erro ao salvar no banco de dados: ${error}`, { status: 500 });
+					}
+				}
 
 				return new Response(responseMessageClean, { status: 200 });
 			} catch (error) {

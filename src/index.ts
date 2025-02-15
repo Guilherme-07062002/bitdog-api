@@ -223,6 +223,7 @@ export default {
 						messages: [
 							{
 								role: "system",
+								max_tokens: 2048,
 								content: `Você terá acesso a um conjunto de dados contendo as seguintes informações sobre cada interação:
 									* **id**: Um identificador único para cada interação.
 									* **question**: A pergunta feita pelo usuário.
@@ -232,10 +233,9 @@ export default {
 
 									## Tarefas
 
-									Com base nesses dados, realize as seguintes análises:
+									Com base nesses dados, realize as seguintes análises de forma objetiva e sucinta:
 
-									1. **Perguntas mais frequentes:** Identifique as perguntas que foram feitas com mais frequência pelos usuários.
-									2. **Tópicos e duração:** Analise a relação entre os tópicos das perguntas e a duração das interações. Quais tópicos tendem a gerar respostas mais longas ou mais curtas?
+									1. **Perguntas mais frequentes:** Identifique dentre as perguntas os tópicos que mais foram abordados, por exemplo: Os tópicos mais abordados são Ciência, Tecnologia e Política.
 									3. **Qualidade da resposta e duração:** Verifique se a duração da interação está relacionada à qualidade da resposta. Perguntas que geram respostas mais longas são mais bem respondidas?
 
 									IMPORTANTE: Sua resposta deve conter até 256 tokens no máximo.

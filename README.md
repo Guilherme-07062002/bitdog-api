@@ -71,7 +71,7 @@ A API utiliza as seguintes variáveis de ambiente:
 
 ```json
 {
-	"audio": "Base64 do áudio"
+	"audioBase64": "Base64 do áudio"
 }
 ```
 

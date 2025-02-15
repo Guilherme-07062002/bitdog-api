@@ -280,6 +280,30 @@ export default {
 			}
         }
 
+		// Retornar histórico de interações
+		if (request.method === 'GET' && pathname === '/dashboard') {
+			try {
+				const registers = await env.DB.prepare(`
+					SELECT question, answer, duration, timestamp
+					FROM registros
+				`).all();
+
+				const response = {
+					count: registers.results.length,
+					registers: registers.results,
+				};
+
+				return new Response(JSON.stringify(response), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' }
+				});
+			}
+			catch (error) {
+				console.log(error);
+				return new Response(`Erro ao buscar registros: ${error}`, { status: 500 });
+			}
+		}
+
         if (request.method === 'GET') {
             return new Response('Hello World!', { status: 200 });
         }
